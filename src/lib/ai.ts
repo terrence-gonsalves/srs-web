@@ -4,7 +4,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-export async function summarizeReport(sampleRows: any[]) {
+export async function summariseReport(sampleRows: any[]) {
 
   // placeholder
   return {
