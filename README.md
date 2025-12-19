@@ -11,8 +11,6 @@ Upload a Salesforce report (CSV), and ReportBrief generates:
 
 Built for Salesforce admins, RevOps, and operators who need insights without manual analysis.
 
----
-
 ### ✨ Features
 
 - 🔐 Secure authentication via Supabase
@@ -22,13 +20,11 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 - ⚡ Fast, minimal, no-friction UI
 - 🧱 Built as a scalable Micro-SaaS
 
----
-
 ### 🧰 Tech Stack
 
 <p align="left">
-  <img src="https://nextjs.org/static/favicon/favicon-32x32.png" alt="Next.js" width="32" />
-  <img src="https://supabase.com/favicon.ico" alt="Supabase" width="32" />
+  <img src="https://nextjs.org/favicon.ico?favicon.d29c4393.ico" alt="Next.js" width="32" />
+  <img src="https://supabase.com/favicon/favicon-32x32.png" alt="Supabase" width="32" />
   <img src="https://openai.com/favicon.ico" alt="OpenAI" width="32" />
   <img src="https://tailwindcss.com/favicons/favicon-32x32.png" alt="Tailwind CSS" width="32" />
 </p>
@@ -42,8 +38,6 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 | AI | OpenAI API (stubbed for MVP) |
 | Styling | Tailwind CSS |
 | Hosting (planned) | Vercel |
-
----
 
 ### 🏗️ Architecture Overview
 
@@ -83,3 +77,62 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 ```bash
   npm install
 ```
+
+3. Create environment variables
+
+Create a .env.local file in the project root:
+
+`NEXT_PUBLIC_SUPABASE_URL=your_supabase_url`
+`NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key`
+`OPENAI_API_KEY=your_openai_key_optional`
+
+4. Run the development server
+
+```bash
+  npm run dev
+```
+
+### 🧪 AI Behavior (MVP Phase)
+
+During early development:
+
+- AI responses are stubbed if no OpenAI key is present
+- This allows full UI + data-flow testing at $0 cost
+
+The OpenAI integration can be enabled later without refactoring.
+
+### 📌 Roadmap
+
+- Secure authentication
+- CSV upload & parsing
+- AI summary stub
+- OpenAI production prompts
+- Dashboard UX polish
+- Stripe subscriptions
+- Team / org support
+- Salesforce direct API integration
+
+### 🧠 Product Vision
+
+ReportBrief aims to be:
+
+>  “The fastest way to understand what your Salesforce reports are actually saying.”
+
+Long-term plans include:
+
+- Multiple report types
+- Scheduled summaries
+- Slack / email delivery
+- Org-wide insights
+
+### 📄 License
+
+[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+
+### 🙌 Author
+
+Built solo by a Salesforce-focused web developer exploring the intersection of:
+
+- AI
+- Micro-SaaS
+- Developer-led products
