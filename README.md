@@ -25,7 +25,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 <p align="left">
   <img src="https://nextjs.org/favicon.ico?favicon.d29c4393.ico" alt="Next.js" width="32" />
   <img src="https://supabase.com/favicon/favicon-32x32.png" alt="Supabase" width="32" />
-  <img src="https://openai.com/favicon.ico" alt="OpenAI" width="32" />
+  <img src="https://openai.com//cdn/assets/favicon-eex17e9e.ico" alt="OpenAI" width="32" />
   <img src="https://tailwindcss.com/favicons/favicon-32x32.png" alt="Tailwind CSS" width="32" />
 </p>
 
