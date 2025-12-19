@@ -1,14 +1,28 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+type AISummaryResult = {
+  summary: string;
+  metrics: string[];
+  trends: string[];
+  recommendations: string[];
+};
 
-export async function summariseReport(sampleRows: any[]) {
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY
+// });
 
-  // placeholder
-  return {
-    summary: "AI summary placeholder",
-    insights: []
-  };
+export async function summariseReport(
+  rows: Record<string, any>[]
+): Promise<AISummaryResult> {
+
+  if (!process.env.OPENAI_API_KEY) {
+    return {
+      summary: "Sample summary based on provided report rows.",
+      metrics: ["Total Records", "Average Value"],
+      trends: ["Upwards trend detected"],
+      recommendations: ["Review high-performing segments"]
+    };
+  }
+
+  throw new Error("OpenAI integration not enabled yet");
 }
