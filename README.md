@@ -59,3 +59,24 @@ Supabase Auth (JWT)
 Supabase Postgres (RLS enforced)
   ↓
 OpenAI API (summarization)
+
+---
+
+## 🔐 Authentication & Security
+
+- Uses Supabase Auth (email / magic link)
+- Each user is assigned a unique user_id
+- All database tables enforce Row Level Security
+- Users can only access their own reports and summaries
+- No service-role keys are exposed to the client
+
+---
+
+## 🚀 Getting Started (Local Development)
+
+1. Clone the repository
+
+```bash
+    git clone https://github.com/YOUR_USERNAME/reportbrief.git
+    cd reportbrief
+```
