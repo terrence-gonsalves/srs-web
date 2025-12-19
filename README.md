@@ -1,4 +1,4 @@
-# 📊 ReportBrief
+## 📊 ReportBrief
 
 ReportBrief is a lightweight AI-powered micro-SaaS that transforms Salesforce report data into clear, executive-ready summaries.
 
@@ -13,7 +13,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 
 ---
 
-## ✨ Features
+### ✨ Features
 
 - 🔐 Secure authentication via Supabase
 - 📁 Upload Salesforce CSV reports
@@ -24,7 +24,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 
 ---
 
-## 🧰 Tech Stack
+### 🧰 Tech Stack
 
 <p align="left">
   <img src="https://nextjs.org/static/favicon/favicon-32x32.png" alt="Next.js" width="32" />
@@ -45,24 +45,23 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 
 ---
 
-## 🏗️ Architecture Overview
+### 🏗️ Architecture Overview
 
 ```text
-Browser
-  ↓
-Next.js Pages (UI)
-  ↓
-Next.js API Routes
-  ↓
-Supabase Auth (JWT)
-  ↓
-Supabase Postgres (RLS enforced)
-  ↓
-OpenAI API (summarization)
+  Browser
+    ↓
+  Next.js Pages (UI)
+    ↓
+  Next.js API Routes
+    ↓
+  Supabase Auth (JWT)
+    ↓
+  Supabase Postgres (RLS enforced)
+    ↓
+  OpenAI API (summarization)
+```
 
----
-
-## 🔐 Authentication & Security
+### 🔐 Authentication & Security
 
 - Uses Supabase Auth (email / magic link)
 - Each user is assigned a unique user_id
@@ -70,13 +69,17 @@ OpenAI API (summarization)
 - Users can only access their own reports and summaries
 - No service-role keys are exposed to the client
 
----
-
-## 🚀 Getting Started (Local Development)
+### 🚀 Getting Started (Local Development)
 
 1. Clone the repository
 
 ```bash
-    git clone https://github.com/YOUR_USERNAME/reportbrief.git
-    cd reportbrief
+  git clone https://github.com/YOUR_USERNAME/reportbrief.git
+  cd reportbrief
+```
+
+2. Install dependencies
+
+```bash
+  npm install
 ```
