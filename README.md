@@ -1,40 +1,148 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+📊 ReportBrief
 
-## Getting Started
+ReportBrief is a lightweight AI-powered micro-SaaS that transforms Salesforce report data into clear, executive-ready summaries.
 
-First, run the development server:
+Upload a Salesforce report (CSV), and ReportBrief generates:
 
-```bash
+A concise executive summary
+
+Key metrics
+
+Notable trends
+
+Actionable recommendations
+
+Built for Salesforce admins, RevOps, and operators who need insights without manual analysis.
+
+✨ Features
+
+🔐 Secure authentication via Supabase
+
+📁 Upload Salesforce CSV reports
+
+🤖 AI-generated summaries (structured JSON)
+
+👤 Per-user data isolation (Row Level Security)
+
+⚡ Fast, minimal, no-friction UI
+
+🧱 Built as a scalable Micro-SaaS
+
+🧰 Tech Stack
+<p align="left"> <img src="https://nextjs.org/static/favicon/favicon-32x32.png" alt="Next.js" width="32" /> <img src="https://supabase.com/favicon.ico" alt="Supabase" width="32" /> <img src="https://openai.com/favicon.ico" alt="OpenAI" width="32" /> <img src="https://tailwindcss.com/favicons/favicon-32x32.png" alt="Tailwind CSS" width="32" /> </p>
+Layer	Technology
+Frontend	Next.js (Pages Router)
+Backend API	Next.js API Routes
+Authentication	Supabase Auth
+Database	Supabase (PostgreSQL + RLS)
+AI	OpenAI API (stubbed for MVP)
+Styling	Tailwind CSS
+Hosting (planned)	Vercel
+🏗️ Architecture Overview
+Browser
+  ↓
+Next.js Pages (UI)
+  ↓
+Next.js API Routes
+  ↓
+Supabase Auth (JWT)
+  ↓
+Supabase Postgres (RLS enforced)
+  ↓
+OpenAI API (summarization)
+
+🔐 Authentication & Security
+
+Uses Supabase Auth (email / magic link)
+
+Each user is assigned a unique user_id
+
+All database tables enforce Row Level Security
+
+Users can only access their own reports and summaries
+
+No service-role keys exposed to the client
+
+🚀 Getting Started (Local Development)
+1. Clone the repository
+git clone https://github.com/YOUR_USERNAME/reportbrief.git
+cd reportbrief
+
+2. Install dependencies
+npm install
+
+3. Create environment variables
+
+Create a .env.local file:
+
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+OPENAI_API_KEY=your_openai_key_optional
+
+
+⚠️ The app works without an OpenAI key using a stubbed AI response.
+
+4. Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Open:
+👉 http://localhost:3000
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+🧪 AI Behavior (MVP Phase)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+During early development:
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+AI responses are stubbed if no OpenAI key is present
 
-## Learn More
+This allows full UI + data flow testing with $0 cost
 
-To learn more about Next.js, take a look at the following resources:
+The OpenAI integration can be enabled later without refactoring.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+📌 Roadmap
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Secure authentication
 
-## Deploy on Vercel
+CSV upload & parsing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+AI summary stub
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+OpenAI production prompts
+
+Dashboard UX polish
+
+Stripe subscriptions
+
+Team / org support
+
+Salesforce direct API integration
+
+🧠 Product Vision
+
+ReportBrief aims to be:
+
+“The fastest way to understand what your Salesforce reports are actually saying.”
+
+Long-term:
+
+Multiple report types
+
+Scheduled summaries
+
+Slack / email delivery
+
+Org-wide insights
+
+📄 License
+
+MIT License — free to use, modify, and build upon.
+
+🙌 Author
+
+Built solo by a Salesforce-focused web developer exploring the intersection of:
+
+AI
+
+Micro-SaaS
+
+Developer-led products
