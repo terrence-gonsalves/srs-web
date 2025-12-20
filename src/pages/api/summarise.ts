@@ -94,8 +94,10 @@ export default async function handler(
       summary: aiResult,
       summaryId: summary.id,
     });
-  } catch (error: any) {
-    console.error("AI summarization error:", error);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Uknown error';
+
+    console.error("AI summarization error:", errorMessage);
     
     // update report status to failed
     await supabase
@@ -105,7 +107,7 @@ export default async function handler(
 
     return res.status(500).json({
       error: "Failed to generate summary",
-      details: error.message,
+      details: errorMessage,
     });
   }
 }
@@ -114,7 +116,7 @@ export default async function handler(
  * Call Claude API directly from server
  * Uses ANTHROPIC_API_KEY environment variable
  */
-async function callClaudeAPI(rows: Record<string, any>[]) {
+async function callClaudeAPI(rows: Record<string, unknown>[]) {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error(
       "ANTHROPIC_API_KEY not configured. Add it to .env.local or use the proxy method for free testing."

@@ -13,7 +13,7 @@ type AISummaryResult = {
  * This is for FREE TESTING - uses Claude API through artifact
  */
 export async function summariseReport(
-  rows: Record<string, any>[]
+  rows: Record<string, unknown>[]
 ): Promise<AISummaryResult> {
 
   // option 1: use the Claude API proxy (FREE for testing)
@@ -39,7 +39,7 @@ export async function summariseReport(
  * Use Claude proxy artifact (FREE)
  */
 async function summariseViaProxy(
-  rows: Record<string, any>[]
+  rows: Record<string, unknown>[]
 ): Promise<AISummaryResult> {
   const proxyUrl = process.env.NEXT_PUBLIC_CLAUDE_PROXY_URL;
   
@@ -99,7 +99,7 @@ async function summariseViaProxy(
  * This will be used later when you have API credits
  */
 async function summariseViaDirect(
-  rows: Record<string, any>[]
+  rows: Record<string, unknown>[]
 ): Promise<AISummaryResult> {
   const response = await fetch('/api/claude-direct', {
     method: 'POST',
