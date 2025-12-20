@@ -166,8 +166,12 @@ async function callClaudeAPI(rows: Record<string, unknown>[]) {
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
+
     return JSON.parse(cleaned);
-  } catch (e) {
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : "Unknown error";
+    console.error("Failed to parse Claude response: ", errorMessage);
+
     throw new Error(`Failed to parse Claude response: ${content}`);
   }
 }
