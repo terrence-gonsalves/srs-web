@@ -1,4 +1,4 @@
-## 📊 ReportBrief
+# 📊 ReportBrief
 
 ReportBrief is a lightweight AI-powered micro-SaaS that transforms Salesforce report data into clear, executive-ready summaries.
 
@@ -11,7 +11,7 @@ Upload a Salesforce report (CSV), and ReportBrief generates:
 
 Built for Salesforce admins, RevOps, and operators who need insights without manual analysis.
 
-### ✨ Features
+## ✨ Features
 
 - 🔐 Secure authentication via Supabase
 - 📁 Upload Salesforce CSV reports
@@ -20,7 +20,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 - ⚡ Fast, minimal, no-friction UI
 - 🧱 Built as a scalable Micro-SaaS
 
-### 🧰 Tech Stack
+## 🧰 Tech Stack
 
 <p align="left">
   <img src="https://nextjs.org/favicon.ico?favicon.d29c4393.ico" alt="Next.js" width="32" />
@@ -39,7 +39,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 | Styling | Tailwind CSS |
 | Hosting (planned) | Vercel |
 
-### 🏗️ Architecture Overview
+## 🏗️ Architecture Overview
 
 ```text
   Browser
@@ -55,7 +55,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
   OpenAI API (summarization)
 ```
 
-### 🔐 Authentication & Security
+## 🔐 Authentication & Security
 
 - Uses Supabase Auth (email / magic link)
 - Each user is assigned a unique user_id
@@ -63,7 +63,7 @@ Built for Salesforce admins, RevOps, and operators who need insights without man
 - Users can only access their own reports and summaries
 - No service-role keys are exposed to the client
 
-### 🚀 Getting Started (Local Development)
+## 🚀 Getting Started (Local Development)
 
 1. Clone the repository
 
@@ -92,7 +92,7 @@ Create a .env.local file in the project root:
   npm run dev
 ```
 
-### 🧪 AI Behavior (MVP Phase)
+## 🧪 AI Behavior (MVP Phase)
 
 During early development:
 
@@ -112,7 +112,7 @@ The OpenAI integration can be enabled later without refactoring.
 - Team / org support
 - Salesforce direct API integration
 
-### 🧠 Product Vision
+## 🧠 Product Vision
 
 ReportBrief aims to be:
 
@@ -125,14 +125,10 @@ Long-term plans include:
 - Slack / email delivery
 - Org-wide insights
 
-### 📄 License
+## 📄 License
 
 [GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
 
-### 🙌 Author
+## 🙌 Author
 
-Built solo by a Salesforce-focused web developer exploring the intersection of:
-
-- AI
-- Micro-SaaS
-- Developer-led products
+[@terrence-gonsalves](https://www.github.com/terrence-gonsalves)
