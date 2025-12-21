@@ -103,7 +103,7 @@ export default function Upload() {
     return (
         <main className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2"> Upload Salesforce</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2"> Upload Salesforce Report</h1>
                 <p className="text-gray-600 mb-8">
                     Upload a CSV export from Salesforce to get AI-powered insights
                 </p>
