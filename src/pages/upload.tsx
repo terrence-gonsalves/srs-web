@@ -1,8 +1,9 @@
 import { useState, useRef, DragEvent } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function Upload() {
+function Upload() {
     const [file, setFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string>("");
@@ -88,6 +89,10 @@ export default function Upload() {
             });
 
             const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || "Upload failed");
+            }
 
             router.push(`/report/${data.reportId}`);
         } catch (e: unknown) {
@@ -224,4 +229,12 @@ export default function Upload() {
             </div>
         </main>
     );
+}
+
+export default function UploadPage() {
+    return (
+        <ProtectedRoute>
+            <Upload />
+        </ProtectedRoute>
+    )
 }
