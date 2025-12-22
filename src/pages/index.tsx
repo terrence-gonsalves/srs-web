@@ -40,6 +40,7 @@ export default function Home() {
                 <Link href="/upload" className="text-gray-600 hover:text-gray-900">
                   Dashboard
                 </Link>
+                
                 <button onClick={() => supabase.auth.signOut()} className="text-gray-600 hover:text-gray-900">
                   Sign Out
                 </button>
