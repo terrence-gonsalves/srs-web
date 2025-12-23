@@ -38,6 +38,9 @@ export default function AuthCallback() {
                             id: user.id,
                             email: user.email,
                             update_at: new Date().toISOString(),
+                        },
+                        {
+                            onConflict: 'id'
                         });
                     
                     if (profileError) {
