@@ -3,7 +3,7 @@ import { supabaseAdmin } from "./supabaseServer";
 export type AuditEventType = 
     | "user_signup"
     | "user_login"
-    | "report_loading"
+    | "report_uploaded"
     | "report_summarised"
     | "report_failed"
     | "pdf_generated"
