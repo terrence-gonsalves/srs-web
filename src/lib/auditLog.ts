@@ -25,7 +25,7 @@ export async function logAuditEvent(
     payload: AuditLogPayload = {}
 ) {
     try {
-        const { error } = await supabaseAdmin.from("audit_log").insert({
+        const { error } = await supabaseAdmin.from("audit_logs").insert({
             user_id: userId,
             event_type: eventType,
             payload: payload,

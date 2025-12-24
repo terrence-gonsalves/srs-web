@@ -91,22 +91,71 @@ function ReportPage() {
                 return;
             }
 
-            const response = await fetch("/api/summarise", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${session.access_token}`,
-                },
-                body: JSON.stringify({ reportId: String(id) }),
-            });
+            console.log("Generating summary for report: ", id);
 
-            const data = await response.json();
+            const { data: samples, error: samplesError }=  await supabase
+                .from("report_row_samples")
+                .select("sample_rows")
+                .eq("report_id", id)
+                .single();
 
-            if (!response.ok) {
-                throw new Error(data.error || "Failed to generate summary");
+            if (samplesError || !samples) {
+                throw new Error("Failed to fetch report data");
             }
 
-            setSummary(data.summary);
+            const proxyUrl = process.env.NEXT_PUBLIC_CLAUDE_PROXY_URL;
+
+            if (!proxyUrl) {
+                throw new Error("Claude proxy not configured. Please add NEXT_PUBLIC_CLAUDE_PROXY_URL to your .env.local file");
+            }
+
+            // create iframe to communicate with proxy
+            const aiResult = await callClaudeViaProxy(proxyUrl, samples.sample_rows.rows);
+
+            // save to DB
+            const { data: summaryData, error: summaryError } = await supabase
+                .from("summaries")
+                .insert({
+                    report_id: id,
+                    user_id: session.user.id,
+                    summary_text: aiResult.summary,
+                    summary_struct: aiResult,
+                    model: "claude-sonnet-4-20250514",
+                    tokens_used: 0,
+                })
+                .select()
+                .single()
+
+            if (summaryError) {
+                throw new Error("Failed to save summary");
+            }
+
+            await supabase
+                .from("reports")
+                .update({
+                    status: "summarised",
+                    summary_id: summaryData.id,
+                })
+                .eq("id", id)
+
+            setSummary(aiResult);
+
+            // const response = await fetch("/api/summarise", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         Authorization: `Bearer ${session.access_token}`,
+            //     },
+            //     body: JSON.stringify({ reportId: String(id) }),
+            // });
+
+            // const data = await response.json();
+
+            // if (!response.ok) {
+            //     throw new Error(data.error || "Failed to generate summary");
+            // }
+
+            // setSummary(data.summary);
 
             // reload report to get update status
             await loadReport();
@@ -116,6 +165,51 @@ function ReportPage() {
         } finally {
             setGenerating(false);
         }
+    };
+
+    // helper function
+    const callClaudeViaProxy = (proxyUrl: string, rows: Record<string, unknown>[]): Promise<Summary> => {
+        return new Promise((resolve, reject) => {
+            const iframe = document.createElement('iframe');
+
+            iframe.src = proxyUrl;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+
+            const requestId = Math.random().toString(36);
+            const timeout = setTimeout(() => {
+                cleanup();
+                reject(new Error('Claude API request timeout (30s). Please try again.'));
+            }, 30000);
+
+            function cleanup() {
+                clearTimeout(timeout);
+                window.removeEventListener('message', handleMessage);
+                document.body.removeChild(iframe);
+            }
+
+            function handleMessage(event: MessageEvent) {
+                if (event.data.requestId === requestId) {
+                    if (event.data.type === 'SUMMARISE_RESPONSE') {
+                        cleanup();
+                        resolve(event.data.result);
+                    } else if (event.data.type === 'SUMMARISE_ERROR') {
+                        cleanup();
+                        reject(new Error(event.data.error));
+                    }
+                }
+            }
+
+            window.addEventListener('message', handleMessage);
+
+            iframe.onload = () => {
+                iframe.contentWindow?.postMessage({
+                    type: "SUMMARISE_REQUEST",
+                    requestId: requestId,
+                    rows: rows.slice(0, 50)
+                }, '*');
+            };
+        });
     };
 
     if (loading) {
@@ -229,7 +323,7 @@ function ReportPage() {
                 </div>
                 )}
                 
-                {!summary && report?.status !== "summarized" && (
+                {!summary && report?.status !== "summarised" && (
                 <div className="bg-white rounded-lg shadow-sm p-8 text-center">
                     <div className="max-w-md mx-auto">
                         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
