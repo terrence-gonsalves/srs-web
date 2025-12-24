@@ -23,7 +23,7 @@ interface Summary {
 
 function ReportPage() {
     const router = useRouter();
-    const { id } = router.query;
+    const { id } = router.query;    
     const [report, setReport] = useState<Report | null>(null);
     const [summary, setSummary] = useState<Summary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -34,28 +34,28 @@ function ReportPage() {
         try {
             setLoading(true);
             setError("");
-
+    
             const { data: reportData, error: reportError } = await supabase
                 .from("reports")
                 .select("*")
                 .eq("id", id)
                 .single();
-            
+    
             if (reportError) throw reportError;
             if (!reportData) throw new Error("Report not found");
-
+    
             setReport(reportData);
-
-            // load summary if it exists
+    
+            // if summary exists, load it
             if (reportData.summary_id) {
                 const { data: summaryData, error: summaryError } = await supabase
                     .from("summaries")
                     .select("summary_struct")
                     .eq("id", reportData.summary_id)
                     .single();
-
+    
                 if (!summaryError && summaryData) {
-                    setSummary(summaryData.summary_struct as Summary)
+                    setSummary(summaryData.summary_struct as Summary);
                 }
             }
         } catch (e: unknown) {
@@ -93,7 +93,7 @@ function ReportPage() {
 
             console.log("Generating summary for report: ", id);
 
-            const { data: samples, error: samplesError }=  await supabase
+            const { data: samples, error: samplesError } =  await supabase
                 .from("report_row_samples")
                 .select("sample_rows")
                 .eq("report_id", id)
@@ -110,7 +110,7 @@ function ReportPage() {
             }
 
             // create iframe to communicate with proxy
-            const aiResult = await callClaudeViaProxy(proxyUrl, samples.sample_rows.rows);
+            const aiResult = await callClaudeViaProxy(proxyUrl, samples.sample_rows);
 
             // save to DB
             const { data: summaryData, error: summaryError } = await supabase
