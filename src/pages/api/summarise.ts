@@ -41,7 +41,10 @@ export default async function handler(
 
   const { reportId } = req.body;
 
+  console.log("Summarise API called with:", { reportId, body: req.body });
+
   if (!reportId) {
+    console.error("Missing reportId in request body:", req.body);
     return res.status(400).json({ error: "Missing reportId" });
   }
 
@@ -84,7 +87,7 @@ export default async function handler(
     await supabase
       .from("reports")
       .update({
-        status: "summarized",
+        status: "summarised",
         summary_id: summary.id,
       })
       .eq("id", reportId);
@@ -94,9 +97,8 @@ export default async function handler(
       summary: aiResult,
       summaryId: summary.id,
     });
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Uknown error';
-
+  } catch (e: unknown) {
+    const errorMessage = e instanceof Error ? e.message : 'Uknown error';
     console.error("AI summarization error:", errorMessage);
     
     // update report status to failed
@@ -168,7 +170,7 @@ async function callClaudeAPI(rows: Record<string, unknown>[]) {
       .trim();
 
     return JSON.parse(cleaned);
-  } catch (e: unknown) {
+  } catch (e) {
     const errorMessage = e instanceof Error ? e.message : "Unknown error";
     console.error("Failed to parse Claude response: ", errorMessage);
 

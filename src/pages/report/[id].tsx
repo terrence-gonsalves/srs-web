@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -30,13 +30,7 @@ function ReportPage() {
     const [generating, setGenerating] = useState(false);
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        if (id) {
-            loadReport();
-        }
-    }, [id]);
-
-    const loadReport = async () => {
+    const loadReport = useCallback(async () => {
         try {
             setLoading(true);
             setError("");
@@ -70,10 +64,20 @@ function ReportPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        if (id) {
+            loadReport();
+        }
+    }, [id, loadReport]);
 
     const generateSummary = async () => {
-        if (!id) return;
+        if (!id) {
+            setError("No report ID found");
+
+            return;
+        }
 
         try {
             setGenerating(true);
@@ -90,9 +94,10 @@ function ReportPage() {
             const response = await fetch("/api/summarise", {
                 method: "POST",
                 headers: {
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${session.access_token}`,
                 },
-                body: JSON.stringify({ reportId: id }),
+                body: JSON.stringify({ reportId: String(id) }),
             });
 
             const data = await response.json();
