@@ -86,7 +86,7 @@ export default async function handler(
 
         // store sample rows
         const { error: samplesError } = await supabase
-            .from("report_rows_samples")
+            .from("report_row_samples")
             .insert({
                 report_id: report.id,
                 sample_rows: rows.slice(0, 50)
