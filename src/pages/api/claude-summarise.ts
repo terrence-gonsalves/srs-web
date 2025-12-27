@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { reportWebVitals } from "next/dist/build/templates/pages";
 
 export default async function handle(
     req: NextApiRequest,

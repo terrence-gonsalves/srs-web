@@ -103,14 +103,17 @@ function ReportPage() {
                 throw new Error("Failed to fetch report data");
             }
 
-            const proxyUrl = process.env.NEXT_PUBLIC_CLAUDE_PROXY_URL;
+            // call mock API
+            const respone = await fetch("/api/claude-summarise", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ rows: samples.sample_rows }),
+            })
 
-            if (!proxyUrl) {
-                throw new Error("Claude proxy not configured. Please add NEXT_PUBLIC_CLAUDE_PROXY_URL to your .env.local file");
-            }
-
-            // create iframe to communicate with proxy
-            const aiResult = await callClaudeViaProxy(proxyUrl, samples.sample_rows);
+            const data = await respone.json();
+            const aiResult = data.result;
 
             // save to DB
             const { data: summaryData, error: summaryError } = await supabase
@@ -140,23 +143,6 @@ function ReportPage() {
 
             setSummary(aiResult);
 
-            // const response = await fetch("/api/summarise", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         Authorization: `Bearer ${session.access_token}`,
-            //     },
-            //     body: JSON.stringify({ reportId: String(id) }),
-            // });
-
-            // const data = await response.json();
-
-            // if (!response.ok) {
-            //     throw new Error(data.error || "Failed to generate summary");
-            // }
-
-            // setSummary(data.summary);
-
             // reload report to get update status
             await loadReport();
         } catch (e: unknown) {
@@ -165,51 +151,6 @@ function ReportPage() {
         } finally {
             setGenerating(false);
         }
-    };
-
-    // helper function
-    const callClaudeViaProxy = (proxyUrl: string, rows: Record<string, unknown>[]): Promise<Summary> => {
-        return new Promise((resolve, reject) => {
-            const iframe = document.createElement('iframe');
-
-            iframe.src = proxyUrl;
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-
-            const requestId = Math.random().toString(36);
-            const timeout = setTimeout(() => {
-                cleanup();
-                reject(new Error('Claude API request timeout (30s). Please try again.'));
-            }, 30000);
-
-            function cleanup() {
-                clearTimeout(timeout);
-                window.removeEventListener('message', handleMessage);
-                document.body.removeChild(iframe);
-            }
-
-            function handleMessage(event: MessageEvent) {
-                if (event.data.requestId === requestId) {
-                    if (event.data.type === 'SUMMARISE_RESPONSE') {
-                        cleanup();
-                        resolve(event.data.result);
-                    } else if (event.data.type === 'SUMMARISE_ERROR') {
-                        cleanup();
-                        reject(new Error(event.data.error));
-                    }
-                }
-            }
-
-            window.addEventListener('message', handleMessage);
-
-            iframe.onload = () => {
-                iframe.contentWindow?.postMessage({
-                    type: "SUMMARISE_REQUEST",
-                    requestId: requestId,
-                    rows: rows.slice(0, 50)
-                }, '*');
-            };
-        });
     };
 
     if (loading) {
