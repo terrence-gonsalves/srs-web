@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     header: {
         marginBottom: 20,
         borderBottom: 2,
+        borderBottomStyle: 'solid',
         borderBottomColor: '#000',
         paddingBottom: 10,
     },
@@ -36,9 +37,9 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 10,
         color: '#666',
-        marginBottom:3,
+        marginBottom: 3,
     },
-    section: { 
+    section: {
         marginTop: 20,
         marginBottom: 15,
     },
@@ -64,15 +65,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     bulletText: {
-        flec: 1,
-        lineHeight: 14,
+        flex: 1,
+        lineHeight: 1.4,
     },
     metricBox: {
         backgroundColor: '#f8f8f8',
         padding: 10,
         marginBottom: 8,
         borderRadius: 4,
-        border: 1,
+        borderWidth: 1,
+        borderStyle: 'solid',
         borderColor: '#e0e0e0',
     },
     footer: {
@@ -83,11 +85,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 9,
         color: '#999',
-        borderTop: 1,
+        borderTopWidth: 1,
+        borderTopStyle: 'solid',
         borderTopColor: '#ddd',
         paddingTop: 10,
-    }
-});
+    },
+  });
 
 const PDFReport: React.FC<PDFReportProps> = ({ report, summary }) => (
     <Document>
