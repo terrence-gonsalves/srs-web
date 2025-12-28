@@ -104,6 +104,11 @@ const PDFReport: React.FC<PDFReportProps> = ({ report, summary }) => (
             </View>
 
             <View style={styles.section}>
+                <Text style={styles.sectionTitle}>📄 Executive Summary</Text>
+                <Text style={styles.text}>{summary.summary}</Text>
+            </View>
+
+            <View style={styles.section}>
                 <Text style={styles.sectionTitle}>📊 Key Metrics</Text>
 
                 {summary.metrics.map((metric, idx) => (
