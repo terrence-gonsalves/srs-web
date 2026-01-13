@@ -2,6 +2,7 @@ import { useState, useRef, DragEvent } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Layout from "@/components/Layout";
 
 function Upload() {
     const [file, setFile] = useState<File | null>(null);
@@ -55,6 +56,7 @@ function Upload() {
     const handleSubmit = async () => {
         if (!file) {
             setError("Please select a file");
+
             return;
         }
 
@@ -70,8 +72,9 @@ function Upload() {
                 setError("You must be logged in to upload reports");
                 setUploading(false);
 
-                // TODO: redirect to login
-
+                // redirect to login
+                router.push("/login");
+                
                 return;
             }
 
@@ -106,39 +109,41 @@ function Upload() {
     };
 
     return (
-        <main className="min-h-screen bg-linear-to-b from-gray-50 to-white">
-            <header className="border-b border-gray-200 bg-white">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                        <span className="text-white font-bold text-sm">RB</span>
-                        </div>
-                        <span className="text-xl font-bold text-gray-900">ReportBrief</span>
-                    </div>
-                </div>
-            </header>
-            
-            <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2"> Upload Salesforce Report</h1>
-                <p className="text-gray-600 mb-8">
-                    Upload a CSV export from Salesforce to get AI-powered insights
-                </p>
+        <Layout>
+            <main className="min-h-screen bg-gray-50 p-6">
+                <div className="max-w-2xl mx-auto">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        Upload Salesforce Report
+                    </h1>
 
-                <div className={`border-2 border-dashed rounded-lg p-12 text-cebter transition-colors ${
-                        dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"
-                    }`}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                >
-                    <input ref={inputRef} type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
+                    <p className="text-gray-600 mb-8">
+                        Upload a CSV export from Salesforce to get AI-powered insights
+                    </p>
+                    
+                    <div
+                        className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
+                            dragActive
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-gray-300 bg-white"
+                        }`}
+                        onDragEnter={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDragOver={handleDrag}
+                        onDrop={handleDrop}
+                    >
+                        <input
+                            ref={inputRef}
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            className="hidden"
+                        />
 
                     {!file ? (
                         <>
-                            <svg 
-                                className="mx-auto h-12 w-12 text-gray-400 mb-4" 
-                                stroke="currentColor" 
+                            <svg
+                                className="mx-auto h-12 w-12 text-gray-400 mb-4"
+                                stroke="currentColor"
                                 fill="none"
                                 viewBox="0 0 48 48"
                             >
@@ -148,15 +153,16 @@ function Upload() {
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
                                 />
-                            </svg> 
+                            </svg>
 
                             <p className="text-gray-600 mb-2">
                                 Drag and drop your CSV file here, or
                             </p>
 
-                            <button 
-                                onClick={() => inputRef.current?.click()} 
-                                className="text-blue-600 hover:text-blue-700 font-medium">
+                            <button
+                                onClick={() => inputRef.current?.click()}
+                                className="text-blue-600 hover:text-blue-700 font-medium"
+                            >
                                 browse files
                             </button>
 
@@ -176,7 +182,7 @@ function Upload() {
                                         strokeLinejoin="round"
                                         strokeWidth={2}
                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />  
+                                    />
                                 </svg>
                                 <span className="text-gray-700 font-medium">{file.name}</span>
                             </div>
@@ -193,41 +199,42 @@ function Upload() {
                             </button>
                         </div>
                     )}
-                </div>  
-
+                    </div>
+                    
                 {error && (
                     <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
                         <p className="text-red-800 text-sm">{error}</p>
                     </div>
-                )}     
+                )}
+                
+                    <button
+                        onClick={handleSubmit}
+                        disabled={!file || uploading}
+                        className={`mt-6 w-full py-3 px-6 rounded-lg font-medium transition-colors ${
+                            !file || uploading
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-black text-white hover:bg-gray-800"
+                        }`}
+                    >
+                        {uploading ? "Uploading..." : "Upload & Analyze"}
+                    </button>
+                    
+                    <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 className="font-semibold text-blue-900 mb-2">
+                            What you will get:
+                        </h3>
 
-                <button
-                    onClick={handleSubmit}
-                    disabled={!file || uploading}
-                    className={`mt-6 w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-                        !file || uploading
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-black text-white hover:bg-gray-800"
-                    }`}
-                >
-                    {uploading ? "Uploading..." : "Upload & Analyze"}
-                </button>
-
-                <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-blue-900 mb-2">
-                        What you&apos;ll get:
-                    </h3>
-
-                    <ul className="text-sm text-blue-800 space-y-1">
-                        <li>Executive summary of your report</li>
-                        <li>Key metrics and insights</li>
-                        <li>Trend analysis</li>
-                        <li>Actionable recommendations</li>
-                        <li>Downloadable PDF summary</li>
-                    </ul>
+                        <ul className="text-sm text-blue-800 space-y-1">
+                            <li>• Executive summary of your report</li>
+                            <li>• Key metrics and insights</li>
+                            <li>• Trend analysis</li>
+                            <li>• Actionable recommendations</li>
+                            <li>• Downloadable PDF summary</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
+        </Layout>
     );
 }
 
