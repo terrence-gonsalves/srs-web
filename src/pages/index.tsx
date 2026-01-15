@@ -78,7 +78,7 @@ export default function Home() {
             Get Started Free
           </button>
           <p className="text-sm text-gray-500 mt-4">
-            No credit card required • 3 free reports per month
+            No credit card required • 5 free reports per month
           </p>
         </div>
         
