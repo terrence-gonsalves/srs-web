@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
+import UsageBadge from "@/components/UsageBadge";
 
 function Upload() {
     const [file, setFile] = useState<File | null>(null);
@@ -119,7 +120,10 @@ function Upload() {
                     <p className="text-gray-600 mb-8">
                         Upload a CSV export from Salesforce to get AI-powered insights
                     </p>
-                    
+
+                    <div className="mb-4">
+                        <UsageBadge />
+                    </div>                    
                     <div
                         className={`border-2 border-dashed rounded-lg p-12 text-center transition-colors ${
                             dragActive
@@ -212,8 +216,8 @@ function Upload() {
                         disabled={!file || uploading}
                         className={`mt-6 w-full py-3 px-6 rounded-lg font-medium transition-colors ${
                             !file || uploading
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                            : "bg-black text-white hover:bg-gray-800"
+                                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                : "bg-black text-white hover:bg-gray-800"
                         }`}
                     >
                         {uploading ? "Uploading..." : "Upload & Analyze"}
