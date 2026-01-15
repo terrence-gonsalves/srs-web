@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { downloadPDF } from "@/components/PDFReport";  
 import Layout from "@/components/Layout";
+import UsageBadge from "@/components/UsageBadge";
 
 interface Report {
     id: string;
@@ -94,6 +95,23 @@ function ReportPage() {
                 return;
             }
 
+            console.log("Checking usage limits...");
+
+            // check if user can generate a report
+            const usageCheck = await fetch("/api/check-usage", {
+                headers:{
+                    Authorization: `Bearer ${session.access_token}`,
+                },
+            });
+
+            const usageResult = await usageCheck.json();
+
+            if (!usageResult.allowed) {
+                setError(usageResult.reason || "Cannot generate report at this time");
+
+                return;
+            }
+
             console.log("Generating summary for report: ", id);
 
             const { data: samples, error: samplesError } =  await supabase
@@ -141,6 +159,17 @@ function ReportPage() {
                 throw new Error("Failed to save summary");
             }
 
+            // log the report generation in DB
+            await supabase.from("audit_logs").insert({
+                user_id: session.user.id,
+                event_type: "report_summarised",
+                payload: {
+                    report_id: id,
+                    report_title: report?.title || "Untitled",
+                },
+            });
+
+            // update report status
             await supabase
                 .from("reports")
                 .update({
@@ -267,9 +296,12 @@ function ReportPage() {
                     </div>
                 )}
                 
-                {!summary && report?.status !== "summarized" && (
+                {!summary && report?.status !== "summarised" && (
                     <div className="bg-white rounded-lg shadow-sm p-8 text-center">
                         <div className="max-w-md mx-auto">
+                            <div className="mb-4">
+                                <UsageBadge />
+                            </div>
                             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path 
