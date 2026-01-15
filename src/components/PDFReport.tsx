@@ -18,77 +18,118 @@ interface PDFReportProps {
 
 const styles = StyleSheet.create({
     page: {
-        padding: 40,
+        padding: 50,
         fontSize: 11,
         fontFamily: 'Helvetica',
+        backgroundColor: '#ffffff',
     },
     header: {
-        marginBottom: 20,
-        borderBottom: 2,
+        marginBottom: 30,
+        paddingBottom: 20,
+        borderBottomWidth: 3,
         borderBottomStyle: 'solid',
-        borderBottomColor: '#000',
-        paddingBottom: 10,
+        borderBottomColor: '#000000',
     },
-    title: {
-        fontSize: 24,
+    logo: {
+        fontSize: 28,
         fontWeight: 'bold',
-        marginBottom: 5,
+        marginBottom: 8,
+        color: '#000000',
     },
-    subtitle: {
-        fontSize: 10,
-        color: '#666',
-        marginBottom: 3,
+    reportTitle: {
+        fontSize: 14,
+        color: '#4B5563',
+        marginBottom: 4,
+    },
+    metadata: {
+        fontSize: 9,
+        color: '#6B7280',
     },
     section: {
-        marginTop: 20,
+        marginTop: 25,
         marginBottom: 15,
     },
+    sectionHeader: {
+        backgroundColor: '#F3F4F6',
+        padding: 12,
+        marginBottom: 15,
+        borderLeftWidth: 4,
+        borderLeftStyle: 'solid',
+        borderLeftColor: '#000000',
+    },
     sectionTitle: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 10,
-        color: '#000',
-        backgroundColor: '#f0f0f0',
-        padding: 8,
+        color: '#111827',
+    },
+    sectionIcon: {
+        fontSize: 14,
+        marginBottom: 2,
+        color: '#6B7280',
     },
     text: {
-        lineHeight: 1.5,
-        marginBottom: 8,
+        lineHeight: 1.6,
+        marginBottom: 10,
+        color: '#374151',
+    },
+    bulletList: {
+        marginTop: 8,
     },
     bulletPoint: {
         flexDirection: 'row',
-        marginBottom: 6,
-        paddingLeft: 10,
+        marginBottom: 10,
+        paddingLeft: 5,
     },
     bullet: {
-        width: 15,
-        fontSize: 12,
+        width: 20,
+        fontSize: 16,
+        color: '#6B7280',
+        marginRight: 5,
     },
     bulletText: {
         flex: 1,
-        lineHeight: 1.4,
+        lineHeight: 1.5,
+        color: '#374151',
+    },
+    metricGrid: {
+        marginTop: 10,
     },
     metricBox: {
-        backgroundColor: '#f8f8f8',
-        padding: 10,
-        marginBottom: 8,
-        borderRadius: 4,
+        backgroundColor: '#F9FAFB',
+        padding: 12,
+        marginBottom: 10,
         borderWidth: 1,
         borderStyle: 'solid',
-        borderColor: '#e0e0e0',
+        borderColor: '#E5E7EB',
+        borderRadius: 4,
+    },
+    metricText: {
+        fontSize: 11,
+        color: '#1F2937',
+        lineHeight: 1.4,
     },
     footer: {
         position: 'absolute',
-        bottom: 30,
-        left: 40,
-        right: 40,
-        textAlign: 'center',
-        fontSize: 9,
-        color: '#999',
+        bottom: 40,
+        left: 50,
+        right: 50,
+        paddingTop: 15,
         borderTopWidth: 1,
         borderTopStyle: 'solid',
-        borderTopColor: '#ddd',
-        paddingTop: 10,
+        borderTopColor: '#E5E7EB',
+    },
+    footerText: {
+        fontSize: 9,
+        color: '#9CA3AF',
+        textAlign: 'center',
+        marginBottom: 3,
+    },
+    pageNumber: {
+        position: 'absolute',
+        bottom: 20,
+        right: 50,
+        fontSize: 9,
+        color: '#9CA3AF',
     },
   });
 
@@ -96,57 +137,83 @@ const PDFReport: React.FC<PDFReportProps> = ({ report, summary }) => (
     <Document>
         <Page size="A4" style={styles.page}>
             <View style={styles.header}>
-                <Text style={styles.title}>ReportBrief AI Summary</Text>
-                <Text style={styles.subtitle}>{report.title}</Text>
-                <Text style={styles.subtitle}>
-                    Generated: {new Date().toLocaleDateString()} | Rows: {report.num_rows.toLocaleString()} | Columns: {report.columns.length}
+                <Text style={styles.logo}>ReportBrief</Text>
+                <Text style={styles.reportTitle}>{report.title}</Text>
+                <Text style={styles.metadata}>
+                    Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </Text>
+                <Text style={styles.metadata}>
+                    Uploaded: {new Date(report.uploaded_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
             </View>
-
+            
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📄 Executive Summary</Text>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionIcon}>Executive Summary</Text>
+                </View>
                 <Text style={styles.text}>{summary.summary}</Text>
             </View>
-
+            
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📊 Key Metrics</Text>
-
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionIcon}>Key Metrics</Text>
+                </View>
+                <View style={styles.metricGrid}>
+          
                 {summary.metrics.map((metric, idx) => (
-                <View key={idx} style={styles.metricBox}>
-                    <Text>{metric}</Text>
-                </View>
+                    <View key={idx} style={styles.metricBox}>
+                        <Text style={styles.metricText}>{metric}</Text>
+                    </View>
                 ))}
 
+                </View>
             </View>
             
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>📈 Notable Trends</Text>
-
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionIcon}>Notable Trends</Text>
+                </View>
+                <View style={styles.bulletList}>
+          
                 {summary.trends.map((trend, idx) => (
-                <View key={idx} style={styles.bulletPoint}>
-                    <Text style={styles.bullet}>•</Text>
-                    <Text style={styles.bulletText}>{trend}</Text>
-                </View>
+                    <View key={idx} style={styles.bulletPoint}>
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.bulletText}>{trend}</Text>
+                    </View>
                 ))}
 
+                </View>
             </View>
             
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>💡 Actionable Recommendations</Text>
-
-                {summary.recommendations.map((rec, idx) => (
-                <View key={idx} style={styles.bulletPoint}>
-                    <Text style={styles.bullet}>→</Text>
-                    <Text style={styles.bulletText}>{rec}</Text>
+                <View style={styles.sectionHeader}>
+                    <Text style={styles.sectionIcon}>Actionable Recommendations</Text>
                 </View>
+                <View style={styles.bulletList}>
+          
+                {summary.recommendations.map((rec, idx) => (
+                    <View key={idx} style={styles.bulletPoint}>
+                        <Text style={styles.bullet}>•</Text>
+                        <Text style={styles.bulletText}>{rec}</Text>
+                    </View>
                 ))}
 
+                </View>
             </View>
             
             <View style={styles.footer}>
-                <Text>Generated by ReportBrief | https://reportbrief.com</Text>
-                <Text>Uploaded: {new Date(report.uploaded_at).toLocaleDateString()}</Text>
+                <Text style={styles.footerText}>
+                    Generated by ReportBrief | AI-Powered Report Analysis
+                </Text>
+                <Text style={styles.footerText}>
+                    This summary is AI-generated. Please verify critical information before making business decisions.
+                </Text>
             </View>
+            
+            <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+                `Page ${pageNumber} of ${totalPages}`
+                )} fixed
+            />
         </Page>
     </Document>
 );
