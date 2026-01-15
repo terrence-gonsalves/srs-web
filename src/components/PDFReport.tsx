@@ -143,7 +143,6 @@ const PDFReport: React.FC<PDFReportProps> = ({ report, summary }) => (
                     Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
                 <Text style={styles.metadata}>
-                    Data: {report.num_rows.toLocaleString()} rows, {report.columns.length} columns | 
                     Uploaded: {new Date(report.uploaded_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </Text>
             </View>
@@ -194,7 +193,7 @@ const PDFReport: React.FC<PDFReportProps> = ({ report, summary }) => (
           
                 {summary.recommendations.map((rec, idx) => (
                     <View key={idx} style={styles.bulletPoint}>
-                        <Text style={styles.bullet}>→</Text>
+                        <Text style={styles.bullet}>•</Text>
                         <Text style={styles.bulletText}>{rec}</Text>
                     </View>
                 ))}
