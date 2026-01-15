@@ -21,7 +21,7 @@ export default function Tersm() {
                 </h1>
 
                 <p className="text-gray-600 mb-8">
-                    Last updated: December 21, 2024
+                    Last updated: December 21, 2025
                 </p>
 
                 <div className="bg-white rounded-lg shadow-sm p-8 space-y-8">
