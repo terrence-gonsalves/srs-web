@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState} from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/router";
 
@@ -17,7 +17,7 @@ export default function Home() {
 
   const handleGetStarted = () => {
     if (isLoggedIn) {
-      router.push("/upload");
+      router.push("/dashboard");
     } else {
       router.push("login");
     }
@@ -37,7 +37,7 @@ export default function Home() {
           <nav className="flex items-center space-x-6">
             {isLoggedIn ? (
               <>
-                <Link href="/upload" className="text-gray-600 hover:text-gray-900">
+                <Link href="/dsahboard" className="text-gray-600 hover:text-gray-900">
                   Dashboard
                 </Link>
                 
