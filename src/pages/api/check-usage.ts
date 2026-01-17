@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
-import { canGenerateReport } from "@/lib/usageTracker";
+import { canGenerateReport } from "@/lib/usageTrackerServer";
 
 export default async function handler(
     req: NextApiRequest,
