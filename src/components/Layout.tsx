@@ -10,7 +10,12 @@ interface LayoutProps {
     simpleHeader?: boolean;
 }
 
-export default function Layout({ children, showHeader = true, showFooter = true, simpleHeader = false }: LayoutProps) {
+export default function Layout({ 
+    children, 
+    showHeader = true, 
+    showFooter = true, 
+    simpleHeader = false 
+}: LayoutProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
 
@@ -54,16 +59,16 @@ export default function Layout({ children, showHeader = true, showFooter = true,
                         {isLoggedIn ? (
                         <>
                             <Link
-                                href="/upload"
+                                href="/dashboard"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 Dashboard
-                                    </Link>
-                                    <Link
-                                    href="/upload"
-                                    className="text-gray-600 hover:text-gray-900"
-                                >
-                                    Upload
+                            </Link>
+                            <Link
+                                href="/upload"
+                                className="text-gray-600 hover:text-gray-900"
+                            >
+                                Upload
                             </Link>
 
                             <button
