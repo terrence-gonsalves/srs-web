@@ -18,6 +18,10 @@ interface Report {
 
 function Dashboard() {
     const router = useRouter();
+
+    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log("Supabase Key exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
     const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -280,7 +284,9 @@ function Dashboard() {
 }
 
 export default function DashboardPage() {
-    <ProtectedRoute>
-        <Dashboard />
-    </ProtectedRoute>
+    return (
+        <ProtectedRoute>
+            <Dashboard />
+        </ProtectedRoute>
+    );
 }

@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 
 interface LayoutProps {
@@ -17,7 +16,6 @@ export default function Layout({
     simpleHeader = false 
 }: LayoutProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -35,7 +33,9 @@ export default function Layout({
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
-        router.push("/");
+        setIsLoggedIn(false);
+        
+        window.location.href = "/";
     };
 
     return (

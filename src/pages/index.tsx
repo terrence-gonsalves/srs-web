@@ -23,6 +23,13 @@ export default function Home() {
     }
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    
+    window.location.href = "/"; 
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">
       <header className="border-b border-gray-200 bg-white">
@@ -37,11 +44,11 @@ export default function Home() {
           <nav className="flex items-center space-x-6">
             {isLoggedIn ? (
               <>
-                <Link href="/dsahboard" className="text-gray-600 hover:text-gray-900">
+                <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
                   Dashboard
                 </Link>
                 
-                <button onClick={() => supabase.auth.signOut()} className="text-gray-600 hover:text-gray-900">
+                <button onClick={handleSignOut} className="text-gray-600 hover:text-gray-900">
                   Sign Out
                 </button>
               </>
