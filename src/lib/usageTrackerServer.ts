@@ -24,7 +24,7 @@ export async function canGenerateReport(userId: string): Promise<{
         .from("audit_logs")
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
-        .eq("event_type", "report_summarised")
+        .eq("event_type", "report_summarized")
         .gte("created_at", startOfMonth.toISOString());
     
     if (error) {
@@ -75,7 +75,7 @@ export async function logReportGeneration(
 ) {
     const { error } = await supabaseAdmin.from("audit_logs").insert({
         user_id: userId,
-        event_type: "report_summarised",
+        event_type: "report_summarized",
         payload: {
             report_id: reportId,
             report_title: reportTitle,

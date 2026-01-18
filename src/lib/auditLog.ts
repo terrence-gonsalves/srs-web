@@ -4,7 +4,7 @@ export type AuditEventType =
     | "user_signup"
     | "user_login"
     | "report_uploaded"
-    | "report_summarised"
+    | "report_summarized"
     | "report_failed"
     | "pdf_generated"
     | "error"

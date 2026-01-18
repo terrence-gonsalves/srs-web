@@ -53,7 +53,7 @@ function Dashboard() {
 
     const getStatusColour = (status: string) => {
         switch (status) {
-            case "summarised":
+            case "summarized":
                 return "bg-green-100 text-green-800";
             case "parsed":
                 return "bg-yellow-100 text-yellow-800";
@@ -66,7 +66,7 @@ function Dashboard() {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case "summarised":
+            case "summarized":
                 return "✓";
             case "parsed":
                 return "⋯";
@@ -240,7 +240,7 @@ function Dashboard() {
                                                 href={`/report/${report.id}`}
                                                 className="text-blue-600 hover:text-blue-900"
                                             >
-                                                {report.status === "summarised" ? "View Summary" : "View Report"}
+                                                {report.status === "summarized" ? "View Summary" : "View Report"}
                                             </Link>
                                         </td>
                                     </tr>
@@ -261,9 +261,9 @@ function Dashboard() {
                                 </p>
                             </div>
                             <div>                        
-                                <p className="text-sm text-gray-600 mb-1">Summarised</p>
+                                <p className="text-sm text-gray-600 mb-1">Summarized</p>
                                 <p className="text-2xl font-bold text-green-600">
-                                    {reports.filter((r) => r.status === "summarised").length}
+                                    {reports.filter((r) => r.status === "summarized").length}
                                 </p>
                         
                             </div>

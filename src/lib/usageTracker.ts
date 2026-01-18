@@ -21,7 +21,7 @@ export async function getUserUsage(userId: string): Promise<UsageStats> {
         .from("audit_logs")
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
-        .eq("event_type", "report_summarised")
+        .eq("event_type", "report_summarized")
         .gte("created_ad", startOfMonth.toISOString());
 
     if (error) {

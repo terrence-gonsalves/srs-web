@@ -163,7 +163,7 @@ function ReportPage() {
                     Authorization: `Bearer ${session.access_token}`,
                 },
                 body: JSON.stringify({
-                    eventType: "report_summarised",
+                    eventType: "report_summarized",
                     payload: {
                         report_id: id,
                         report_title: report?.title || "Untitled",
@@ -175,7 +175,7 @@ function ReportPage() {
             await supabase
                 .from("reports")
                 .update({
-                    status: "summarised",
+                    status: "summarized",
                     summary_id: summaryData.id,
                 })
                 .eq("id", id)
@@ -298,7 +298,7 @@ function ReportPage() {
                     </div>
                 )}
                 
-                {!summary && report?.status !== "summarised" && (
+                {!summary && report?.status !== "summarized" && (
                     <div className="bg-white rounded-lg shadow-sm p-8 text-center">
                         <div className="max-w-md mx-auto">
                             <div className="mb-4">
