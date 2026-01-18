@@ -95,8 +95,6 @@ function ReportPage() {
                 return;
             }
 
-            console.log("Checking usage limits...");
-
             // check if user can generate a report
             const usageCheck = await fetch("/api/check-usage", {
                 headers:{
@@ -111,8 +109,6 @@ function ReportPage() {
 
                 return;
             }
-
-            console.log("Generating summary for report: ", id);
 
             const { data: samples, error: samplesError } =  await supabase
                 .from("report_row_samples")
@@ -160,13 +156,19 @@ function ReportPage() {
             }
 
             // log the report generation in DB
-            await supabase.from("audit_logs").insert({
-                user_id: session.user.id,
-                event_type: "report_summarised",
-                payload: {
-                    report_id: id,
-                    report_title: report?.title || "Untitled",
+            await fetch("/api/log-event", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.access_token}`,
                 },
+                body: JSON.stringify({
+                    eventType: "report_summarised",
+                    payload: {
+                        report_id: id,
+                        report_title: report?.title || "Untitled",
+                    },
+                }),
             });
 
             // update report status
