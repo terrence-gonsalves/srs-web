@@ -22,12 +22,20 @@ export async function getUserUsage(userId: string): Promise<UsageStats> {
         .select("*", { count: "exact", head: true })
         .eq("user_id", userId)
         .eq("event_type", "report_summarized")
-        .gte("created_ad", startOfMonth.toISOString());
+        .gte("created_at", startOfMonth.toISOString());
 
     if (error) {
         console.error("Error fetching usage: ", error);
 
-        throw error;
+        // return zero usage on error rather than thowing
+
+        return {
+            reportsThisMonth: 0,
+            limit: FREE_TIER_LIMIT,
+            remaining: FREE_TIER_LIMIT,
+            hasExceeded: false,
+            resetDate: nextMonth
+        }
     }
 
     const reportsThisMonth = count || 0;

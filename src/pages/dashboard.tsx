@@ -261,7 +261,7 @@ function Dashboard() {
                                 </p>
                             </div>
                             <div>                        
-                                <p className="text-sm text-gray-600 mb-1">Summarized</p>
+                                <p className="text-sm text-gray-600 mb-1">Summarised</p>
                                 <p className="text-2xl font-bold text-green-600">
                                     {reports.filter((r) => r.status === "summarized").length}
                                 </p>

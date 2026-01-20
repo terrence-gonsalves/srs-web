@@ -155,30 +155,43 @@ function ReportPage() {
                 throw new Error("Failed to save summary");
             }
 
-            // log the report generation in DB
-            await fetch("/api/log-event", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${session.access_token}`,
-                },
-                body: JSON.stringify({
-                    eventType: "report_summarized",
-                    payload: {
-                        report_id: id,
-                        report_title: report?.title || "Untitled",
-                    },
-                }),
-            });
-
             // update report status
-            await supabase
+            const { error: updateError } = await supabase
                 .from("reports")
                 .update({
                     status: "summarized",
                     summary_id: summaryData.id,
                 })
-                .eq("id", id)
+                .eq("id", id);
+            
+            if (updateError) {
+                console.error("Failed to update report status: ", updateError);
+            }
+
+            // log the report generation in DB
+            try {
+                const logResponse = await fetch("/api/log-events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({
+                        eventType: "report_summarized",
+                        payload: {
+                            report_id: id,
+                            report_title: report?.title || "Untitled",
+                        },
+                    }),
+                });
+
+                if (!logResponse.ok) {
+                    const logError = await logResponse.json();
+                    console.error("Failed to log event: ", logError);
+                }
+            } catch (logError) {
+                console.error("Error logging event ", logError);
+            }
 
             setSummary(aiResult);
 
