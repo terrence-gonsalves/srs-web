@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
 
 interface LayoutProps {
@@ -10,9 +9,13 @@ interface LayoutProps {
     simpleHeader?: boolean;
 }
 
-export default function Layout({ children, showHeader = true, showFooter = true, simpleHeader = false }: LayoutProps) {
+export default function Layout({ 
+    children, 
+    showHeader = true, 
+    showFooter = true, 
+    simpleHeader = false 
+}: LayoutProps) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,7 +33,9 @@ export default function Layout({ children, showHeader = true, showFooter = true,
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
-        router.push("/");
+        setIsLoggedIn(false);
+        
+        window.location.href = "/";
     };
 
     return (
@@ -54,16 +59,16 @@ export default function Layout({ children, showHeader = true, showFooter = true,
                         {isLoggedIn ? (
                         <>
                             <Link
-                                href="/upload"
+                                href="/dashboard"
                                 className="text-gray-600 hover:text-gray-900"
                             >
                                 Dashboard
-                                    </Link>
-                                    <Link
-                                    href="/upload"
-                                    className="text-gray-600 hover:text-gray-900"
-                                >
-                                    Upload
+                            </Link>
+                            <Link
+                                href="/upload"
+                                className="text-gray-600 hover:text-gray-900"
+                            >
+                                Upload
                             </Link>
 
                             <button

@@ -95,8 +95,6 @@ function ReportPage() {
                 return;
             }
 
-            console.log("Checking usage limits...");
-
             // check if user can generate a report
             const usageCheck = await fetch("/api/check-usage", {
                 headers:{
@@ -111,8 +109,6 @@ function ReportPage() {
 
                 return;
             }
-
-            console.log("Generating summary for report: ", id);
 
             const { data: samples, error: samplesError } =  await supabase
                 .from("report_row_samples")
@@ -159,24 +155,43 @@ function ReportPage() {
                 throw new Error("Failed to save summary");
             }
 
-            // log the report generation in DB
-            await supabase.from("audit_logs").insert({
-                user_id: session.user.id,
-                event_type: "report_summarised",
-                payload: {
-                    report_id: id,
-                    report_title: report?.title || "Untitled",
-                },
-            });
-
             // update report status
-            await supabase
+            const { error: updateError } = await supabase
                 .from("reports")
                 .update({
-                    status: "summarised",
+                    status: "summarized",
                     summary_id: summaryData.id,
                 })
-                .eq("id", id)
+                .eq("id", id);
+            
+            if (updateError) {
+                console.error("Failed to update report status: ", updateError);
+            }
+
+            // log the report generation in DB
+            try {
+                const logResponse = await fetch("/api/log-events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({
+                        eventType: "report_summarized",
+                        payload: {
+                            report_id: id,
+                            report_title: report?.title || "Untitled",
+                        },
+                    }),
+                });
+
+                if (!logResponse.ok) {
+                    const logError = await logResponse.json();
+                    console.error("Failed to log event: ", logError);
+                }
+            } catch (logError) {
+                console.error("Error logging event ", logError);
+            }
 
             setSummary(aiResult);
 
@@ -296,7 +311,7 @@ function ReportPage() {
                     </div>
                 )}
                 
-                {!summary && report?.status !== "summarised" && (
+                {!summary && report?.status !== "summarized" && (
                     <div className="bg-white rounded-lg shadow-sm p-8 text-center">
                         <div className="max-w-md mx-auto">
                             <div className="mb-4">
