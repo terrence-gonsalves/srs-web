@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
+import { logError, logException } from "@/lib/errorLog";
 
 function Upload() {
     const [file, setFile] = useState<File | null>(null);
@@ -70,6 +71,12 @@ function Upload() {
             const { data: { session }, error: authError } = await supabase.auth.getSession();
 
             if (authError || !session) {
+                await logError("Upload attempted without valid session", {
+                    component: "UploadPage",
+                    action: "handleSubmit",
+                    authError: authError?.message,
+                });
+                
                 setError("You must be logged in to upload reports");
                 setUploading(false);
 

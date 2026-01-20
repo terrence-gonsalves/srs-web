@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+//import { useRouter } from "next/router";
 import Link from "next/link";   
 import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
+import { logException } from "@/lib/errorLog";
 
 interface Report {
     id: string;
@@ -17,11 +18,7 @@ interface Report {
 }
 
 function Dashboard() {
-    const router = useRouter();
-
-    console.log("Supabase URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log("Supabase Key exists:", !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
+    //const router = useRouter();
     const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -44,6 +41,11 @@ function Dashboard() {
 
             setReports(data || []);
         } catch (e: unknown) {
+            await logException(e, {
+                component: "Dashboard",
+                action: "loadReports",
+            });
+            
             const errorMessage = e instanceof Error ? e.message : "Failed to load reports";
             setError(errorMessage);
         } finally {

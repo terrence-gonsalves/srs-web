@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
+import { logException } from "@/lib/errorLog";
 
 interface LayoutProps {
     children: ReactNode;
@@ -32,6 +33,33 @@ export default function Layout({
     }, []);
 
     const handleSignOut = async () => {
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            // log the logout event
+            if (user) {
+                await fetch("/api/log-events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        eventType: "user_logout",
+                        payload: {
+                            email: user.email,
+                        },
+                    }),
+                }).catch(e => console.error("Failed to log report: ", e));
+            }
+        } catch (e) {
+            await logException(e, {
+                component: "Layout",
+                action: "handleSignOut",
+            });
+
+            console.error("Error during logout: ", e);
+        }
+
         await supabase.auth.signOut();
         setIsLoggedIn(false);
         
