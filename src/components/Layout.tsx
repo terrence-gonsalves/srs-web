@@ -3,6 +3,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { logException } from "@/lib/errorLog";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from '@vercel/analytics/next';
 
 interface LayoutProps {
     children: ReactNode;
@@ -129,6 +130,7 @@ export default function Layout({
             <main className="flex-1">
                 {children}
                 <SpeedInsights />
+                <Analytics />
             </main>
 
         {showFooter && (
