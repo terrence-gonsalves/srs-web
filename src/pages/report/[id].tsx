@@ -152,7 +152,7 @@ function ReportPage() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ rows: samples.sample_rows }),
-            })
+            });
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -174,7 +174,7 @@ function ReportPage() {
                     tokens_used: 0,
                 })
                 .select()
-                .single()
+                .single();
 
             if (summaryError) {
                 throw new Error("Failed to save summary");
@@ -252,7 +252,7 @@ function ReportPage() {
                 component: "ReportPage",
                 action: "generateSummary",
                 reportId: String(id),
-            })
+            });
 
             const errorMessage = e instanceof Error ? e.message : "Failed to generate summary";
             setError(errorMessage);
