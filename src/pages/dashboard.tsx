@@ -5,7 +5,6 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
 import { logException } from "@/lib/errorLog";
-import { logEventFromClient } from "@/lib/auditLog";
 
 interface Report {
     id: string;
@@ -95,9 +94,14 @@ function Dashboard() {
             setReports(data || []);
 
             // log Dashboard view
-            await logEventFromClient("dashboard_viewed", {
-                report_count: data?.length || 0,
-            });
+            await fetch("/api/log-events", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    eventType: "dashboard_viewed",
+                    payload: { report_count: data?.length || 0 },
+                }),
+            }).catch(e => console.error("Failed to log dashboard view: ", e));
         } catch (e: unknown) {
             await logException(e, {
                 component: "Dashboard",
@@ -116,8 +120,13 @@ function Dashboard() {
 
         // log search
         if ( query.length >= 3) {
-            logEventFromClient("dashboard_search", {
-                query_length: query.length,
+            fetch("/api/log-events", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    eventType: "dashboard_search",
+                    payload: { query_length: query.length },
+                }),
             }).catch(e => console.error("Failed to log search: ", e));
         }
     };
@@ -126,9 +135,14 @@ function Dashboard() {
         setSortBy(newSort);
 
         // log sort change
-        logEventFromClient("dashboard_sorted", {
-            sortBy: newSort,
-        }).catch(e => console.error("Failed to log sort: ", e));
+        fetch("/api/log-events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                eventType: "dashboard_sorted",
+                payload: { sortBy: newSort },
+            }),
+        }).catch(e => console.error("Failled to log sort: ", e));
     };
 
     const getStatusColour = (status: string) => {

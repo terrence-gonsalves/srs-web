@@ -1,4 +1,4 @@
-import { logEventFromClient } from "./auditLog";
+import { supabase } from "./supabaseClient";
 
 interface ErrorContext {
     component?: string;
@@ -16,14 +16,26 @@ export async function logError(
     console.error("Error: ", errorMessage, context);
 
     try {
-        
-        // log to DB using authenticated client helper
-        await logEventFromClient("error", {
-            error: errorMessage,
-            context: context || {},
-            timestamp: new Date().toISOString(),
-            userAgent: navigator.userAgent,
-            url: window.location.href
+
+        // get current user
+        const { data: { user } } = await supabase.auth.getUser();
+
+        // log to DB
+        await fetch("/api/log-events", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                eventType: "error",
+                payload: {
+                    error: errorMessage,
+                    context: context || {},
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    url: window.location.href
+                },
+            }),
         });
     } catch (e) {
 

@@ -7,7 +7,6 @@ import { downloadPDF } from "@/components/PDFReport";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
 import { logError, logException } from "@/lib/errorLog";
-import { logEventFromClient } from "@/lib/auditLog";
 
 interface Report {
     id: string;
@@ -153,7 +152,7 @@ function ReportPage() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ rows: samples.sample_rows }),
-            })
+            });
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -175,7 +174,7 @@ function ReportPage() {
                     tokens_used: 0,
                 })
                 .select()
-                .single()
+                .single();
 
             if (summaryError) {
                 throw new Error("Failed to save summary");
@@ -213,10 +212,25 @@ function ReportPage() {
 
             // log the report generation in DB
             try {
-                await logEventFromClient("report_summarized", {
-                    report_id: id,
-                    report_title: report?.title || "Untitled",
+                const logResponse = await fetch("/api/log-events", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${session.access_token}`,
+                    },
+                    body: JSON.stringify({
+                        eventType: "report_summarized",
+                        payload: {
+                            report_id: id,
+                            report_title: report?.title || "Untitled",
+                        },
+                    }),
                 });
+
+                if (!logResponse.ok) {
+                    const logError = await logResponse.json();
+                    console.error("Failed to log event: ", logError);
+                }
             } catch (e: unknown) {
                 const errorMessage = e instanceof Error ? e.message : "Failed to log response";
 
@@ -238,7 +252,7 @@ function ReportPage() {
                 component: "ReportPage",
                 action: "generateSummary",
                 reportId: String(id),
-            })
+            });
 
             const errorMessage = e instanceof Error ? e.message : "Failed to generate summary";
             setError(errorMessage);

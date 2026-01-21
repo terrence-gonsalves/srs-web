@@ -1,5 +1,4 @@
 import { supabaseAdmin } from "./supabaseServer";
-import { supabase } from "./supabaseClient";
 
 export type AuditEventType = 
     | "user_signup"
@@ -58,43 +57,4 @@ export async function logError(
         error: errorMessage,
         ...context
     });
-}
-
-/**
- * Log an audit event from client-side
- * Automatically includes authentication token
- */
-export async function logEventFromClient(
-    eventType: AuditEventType,
-    payload: AuditLogPayload = {}
-): Promise<void> {
-    try {
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session) {
-            console.warn("Cannot log event: No active session");
-            return;
-        }
-
-        const response = await fetch("/api/log-events", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${session.access_token}`,
-            },
-            body: JSON.stringify({
-                eventType,
-                payload,
-            }),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Failed to log event ${eventType}:`, errorText);
-        }
-    } catch (e) {
-
-        // don't break the app if logging fails
-        console.error(`Error logging event ${eventType}:`, e);
-    }
 }

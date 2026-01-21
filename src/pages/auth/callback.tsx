@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "@/lib/supabaseClient";
-import { logException } from "@/lib/errorLog";
-import { logEventFromClient } from "@/lib/auditLog";
+import { logError, logException } from "@/lib/errorLog";
 
 export default function AuthCallback() {
     const router = useRouter();
@@ -62,9 +61,19 @@ export default function AuthCallback() {
 
                     // log the login event
                     try {
-                        await logEventFromClient("user_login", {
-                            email: user.email,
-                            login_method: "magic_link",
+                        await fetch("/api/log-events", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                            body: JSON.stringify({
+                                eventType: "user_login",
+                                paload: {
+                                    email: user.email,
+                                    login_method: "magic_link",
+                                },
+                            }),
                         });
                     } catch (logError) {
                         await logException(logError, {
