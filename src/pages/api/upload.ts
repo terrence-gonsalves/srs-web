@@ -27,6 +27,7 @@ export default async function handler(
     if (authError || !user) {
         return res.status(401).json({ error: "Unauthorised" });
     }
+    
     try {
 
         //parse data
@@ -87,7 +88,7 @@ export default async function handler(
         let finalFilename = filename;
 
         if (forceNew && existingReports && existingReports.length > 0) {
-            
+
             // append timestamp to make title unique
             const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5);
             const fileExt = filename.endsWith(".csv") ? ".csv" : "";

@@ -350,7 +350,7 @@ function Upload() {
                 
             {showDuplicateDialog && existingReport && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                    <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
                         <div className="flex items-start mb-4">
                             <div className="shrink-0">
                                 <svg
@@ -392,15 +392,15 @@ function Upload() {
                         <div className="flex flex-col sm:flex-row gap-3 mt-6">
                             <button
                                 onClick={handleReviewExisting}
-                                className="flex-1 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 font-medium transition-colors"
+                                className="flex-1 whitespace-nowrap bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 font-medium transition-colors"
                             >
-                                Review Existing Report
+                                Review existing
                             </button>
                             <button
                                 onClick={handleGenerateNew}
-                                className="flex-1 bg-gray-200 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-300 font-medium transition-colors"
+                                className="flex-1 whitespace-nowrap bg-gray-200 text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-300 font-medium transition-colors"
                             >
-                                Generate New Summary
+                                Generate new
                             </button>
                         </div>
                         
