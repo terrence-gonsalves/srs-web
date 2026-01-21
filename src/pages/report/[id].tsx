@@ -7,6 +7,7 @@ import { downloadPDF } from "@/components/PDFReport";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
 import { logError, logException } from "@/lib/errorLog";
+import { logEventFromClient } from "@/lib/auditLog";
 
 interface Report {
     id: string;
@@ -212,25 +213,10 @@ function ReportPage() {
 
             // log the report generation in DB
             try {
-                const logResponse = await fetch("/api/log-events", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${session.access_token}`,
-                    },
-                    body: JSON.stringify({
-                        eventType: "report_summarized",
-                        payload: {
-                            report_id: id,
-                            report_title: report?.title || "Untitled",
-                        },
-                    }),
+                await logEventFromClient("report_summarized", {
+                    report_id: id,
+                    report_title: report?.title || "Untitled",
                 });
-
-                if (!logResponse.ok) {
-                    const logError = await logResponse.json();
-                    console.error("Failed to log event: ", logError);
-                }
             } catch (e: unknown) {
                 const errorMessage = e instanceof Error ? e.message : "Failed to log response";
 

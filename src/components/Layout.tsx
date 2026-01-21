@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { logException } from "@/lib/errorLog";
+import { logEventFromClient } from "@/lib/auditLog";
 
 interface LayoutProps {
     children: ReactNode;
@@ -38,18 +39,9 @@ export default function Layout({
 
             // log the logout event
             if (user) {
-                await fetch("/api/log-events", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        eventType: "user_logout",
-                        payload: {
-                            email: user.email,
-                        },
-                    }),
-                }).catch(e => console.error("Failed to log report: ", e));
+                await logEventFromClient("user_logout", {
+                    email: user.email,
+                }).catch(e => console.error("Failed to log logout: ", e));
             }
         } catch (e) {
             await logException(e, {

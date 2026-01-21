@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
-//import { useRouter } from "next/router";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";   
 import { supabase } from "@/lib/supabaseClient";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Layout from "@/components/Layout";
 import UsageBadge from "@/components/UsageBadge";
 import { logException } from "@/lib/errorLog";
+import { logEventFromClient } from "@/lib/auditLog";
 
 interface Report {
     id: string;
@@ -17,15 +17,68 @@ interface Report {
     summary_id: string | null;
 }
 
+type SortOption = "newest" | "oldest" | "summarized" | "pending";
+
 function Dashboard() {
-    //const router = useRouter();
     const [reports, setReports] = useState<Report[]>([]);
+    const [filteredReports, setFilteredReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [sortBy, setSortBy] = useState<SortOption>("newest");
 
     useEffect(() => {
         loadReports();
     }, []);
+
+    const filterAndSortReports = useCallback(() => {
+        let filtered = [...reports];
+
+        // apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLocaleLowerCase();
+            
+            filtered = filtered.filter(report => 
+                report.title.toLocaleLowerCase().includes(query)
+            );
+        }
+
+        // apply sort
+        switch (sortBy) {
+            case "newest":
+                filtered.sort((a, b) =>
+                    new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+                );
+
+                break;
+            case "oldest":
+                filtered.sort((a, b) =>
+                    new Date(a.uploaded_at).getTime() - new Date(b.uploaded_at).getTime()
+                );
+
+                break;
+            case "summarized":
+                filtered = filtered.filter(r => r.status === "summarized");
+                filtered.sort((a, b) =>
+                    new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+                );
+
+                break;
+            case "pending":
+                filtered = filtered.filter(r => r.status === "parsed");
+                filtered.sort((a, b) =>
+                    new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+                );
+
+                break;
+        }
+
+        setFilteredReports(filtered);
+    }, [reports, searchQuery, sortBy]);
+
+    useEffect(() => {
+        filterAndSortReports();
+    }, [filterAndSortReports]);
 
     const loadReports = async () => {
         try {
@@ -40,6 +93,11 @@ function Dashboard() {
             if (fetchError) throw fetchError;
 
             setReports(data || []);
+
+            // log Dashboard view
+            await logEventFromClient("dashboard_viewed", {
+                report_count: data?.length || 0,
+            });
         } catch (e: unknown) {
             await logException(e, {
                 component: "Dashboard",
@@ -51,6 +109,26 @@ function Dashboard() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearchChange = (query: string) => {
+        setSearchQuery(query);
+
+        // log search
+        if ( query.length >= 3) {
+            logEventFromClient("dashboard_search", {
+                query_length: query.length,
+            }).catch(e => console.error("Failed to log search: ", e));
+        }
+    };
+
+    const handleSortChange = (newSort: SortOption) => {
+        setSortBy(newSort);
+
+        // log sort change
+        logEventFromClient("dashboard_sorted", {
+            sortBy: newSort,
+        }).catch(e => console.error("Failed to log sort: ", e));
     };
 
     const getStatusColour = (status: string) => {
@@ -125,6 +203,55 @@ function Dashboard() {
                     </div>
                 )}
 
+                {reports.length > 0 && (
+                    <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            <div className="flex-1">
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        placeholder="Search reports by name..."
+                                        value={searchQuery}
+                                        onChange={(e) => handleSearchChange(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                    <svg
+                                        className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div className="md:w-64">
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                    <option value="summarized">Summarized Only</option>
+                                    <option value="pending">Pending Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="mt-3 text-sm text-gray-600">
+                            Showing {filteredReports.length} of {reports.length} reports
+                            {searchQuery && ` matching "${searchQuery}"`}
+                        </div>
+                    </div>
+                )}
+
                 {!loading && reports.length === 0 && (
                     <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                         <div className="max-w-md mx-auto">
@@ -161,8 +288,47 @@ function Dashboard() {
                         </div>
                     </div>
                 )}
+
+                {!loading && reports.length > 0 && filteredReports.length === 0 && (
+                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                        <div className="max-w-md mx-auto">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg
+                                    className="w-8 h-8 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                    />
+                                </svg>
+                            </div>
+
+                            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                                No matching reports
+                            </h2>
+                            <p className="text-gray-600 mb-6">
+                                Try adjusting your search or filter criteria
+                            </p>
+
+                            <button
+                                onClick={() => {
+                                    setSearchQuery("");
+                                    setSortBy("newest");
+                                }}
+                                className="text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                                Clear filters
+                            </button>
+                        </div>
+                    </div>
+                )}
                 
-                {reports.length > 0 && (
+                {filteredReports.length > 0 && (
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
@@ -186,8 +352,8 @@ function Dashboard() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                            
-                                {reports.map((report) => (
+                    
+                                {filteredReports.map((report) => (
                                     <tr
                                         key={report.id}
                                         className="hover:bg-gray-50 transition-colors"
@@ -227,10 +393,10 @@ function Dashboard() {
                                         <td className="px-6 py-4">
                                             <span
                                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColour(
-                                                report.status
+                                                    report.status
                                                 )}`}
                                             >
-                                            <span className="mr-1">{getStatusIcon(report.status)}</span>
+                                                <span className="mr-1">{getStatusIcon(report.status)}</span>
                                                 {report.status}
                                             </span>
                                         </td>
