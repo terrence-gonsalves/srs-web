@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { logException } from "@/lib/errorLog";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 interface LayoutProps {
     children: ReactNode;
@@ -125,7 +126,10 @@ export default function Layout({
             </header>
         )}
         
-            <main className="flex-1">{children}</main>
+            <main className="flex-1">
+                {children}
+                <SpeedInsights />
+            </main>
 
         {showFooter && (
             <footer className="border-t border-gray-200 bg-gray-50">
