@@ -26,6 +26,25 @@ function Dashboard() {
     const [searchQuery, setSearchQuery] = useState("");
     const [sortBy, setSortBy] = useState<SortOption>("newest");
 
+    const logEvent = async (eventType: string, payload: Record<string, unknown>) => {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) return; 
+
+            await fetch("/api/log-events", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ eventType, payload }),
+            });
+        } catch (e) {  
+            console.error("Failed to log event: ", e); 
+        }
+    }
+
     useEffect(() => {
         loadReports();
     }, []);
@@ -94,14 +113,9 @@ function Dashboard() {
             setReports(data || []);
 
             // log Dashboard view
-            await fetch("/api/log-events", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    eventType: "dashboard_viewed",
-                    payload: { report_count: data?.length || 0 },
-                }),
-            }).catch(e => console.error("Failed to log dashboard view: ", e));
+            await logEvent("dashboard_viewed", {
+                report_count: data?.length || 0,
+            });
         } catch (e: unknown) {
             await logException(e, {
                 component: "Dashboard",
@@ -119,15 +133,8 @@ function Dashboard() {
         setSearchQuery(query);
 
         // log search
-        if ( query.length >= 3) {
-            fetch("/api/log-events", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    eventType: "dashboard_search",
-                    payload: { query_length: query.length },
-                }),
-            }).catch(e => console.error("Failed to log search: ", e));
+        if (query.length >= 3) {
+            logEvent("dashboard_search", { query_length: query.length });
         }
     };
 
@@ -135,14 +142,7 @@ function Dashboard() {
         setSortBy(newSort);
 
         // log sort change
-        fetch("/api/log-events", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                eventType: "dashboard_sorted",
-                payload: { sortBy: newSort },
-            }),
-        }).catch(e => console.error("Failled to log sort: ", e));
+        logEvent("dashboard_sorted", { sortBy: newSort });
     };
 
     const getStatusColour = (status: string) => {
