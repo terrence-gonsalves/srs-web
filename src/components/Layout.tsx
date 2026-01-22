@@ -4,6 +4,9 @@ import { supabase } from "@/lib/supabaseClient";
 import { logException } from "@/lib/errorLog";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from '@vercel/analytics/next';
+import packageJson from "../../package.json";
+
+const APP_VERSION = packageJson.version;
 
 interface LayoutProps {
     children: ReactNode;
@@ -144,6 +147,7 @@ export default function Layout({
                             <span className="text-sm text-gray-600">
                                 © 2025 ReportBrief. All rights reserved.
                             </span>
+                            <span className="text-xs text-gray-400">v{APP_VERSION}</span>
                         </div>
                         <div className="flex space-x-6 text-sm text-gray-600">
                             <Link href="/privacy" className="hover:text-gray-900">
